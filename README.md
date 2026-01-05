@@ -13,6 +13,9 @@ This project demonstrates **Playwright automation using JavaScript** for both **
 
 ## Project Structure
 
+```
+project/
+│
 ├── tests
 │   ├── ui
 │   │   └── bookstore.js
@@ -25,6 +28,8 @@ This project demonstrates **Playwright automation using JavaScript** for both **
 ├── package.json
 ├── README.md
 └── .gitignore
+
+```
 
 ---
 
@@ -72,7 +77,6 @@ To ensure stable execution:
 ---
 
 ## Notes
-- Written using **JavaScript**
 - Focus on clear, stable, real-world automation flows
 
 ---
