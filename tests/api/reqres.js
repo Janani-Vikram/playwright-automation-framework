@@ -1,9 +1,12 @@
 const { test, expect } = require('@playwright/test');
+import dotenv from 'dotenv';
+import path from 'path';
 
 test.describe('Reqres Pro API Automation', () => {
 
-    const API_KEY = '${process.env.REQRES_API_KEY}';
-    const BASE_URL = 'https://reqres.in/api/collections';
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+    const API_KEY = process.env.REQRES_API_KEY;
+    const BASE_URL = 'https://reqres.in/api';
 
     let userId;
 
@@ -13,11 +16,13 @@ test.describe('Reqres Pro API Automation', () => {
     };
 
     test('Create a user and store userId', async ({ request }) => {
-        const response = await request.post(`${BASE_URL}/collection/users/records`, {
+        console.log(`Headers ${headers}`)
+        const response = await request.post(`${BASE_URL}/collections/users/records?project_id=1127`, {
             headers: headers,
             data: {
-                "name": "Janani",
-                "job": "QA Automation Engineer"
+                "data": {
+                    "name": "Janani vikram",
+                }
             }
         });
 
@@ -25,35 +30,34 @@ test.describe('Reqres Pro API Automation', () => {
         expect(response.status()).toBe(201);
 
         const responseBody = await response.json();
-        userId = responseBody.id; // Store userId for next tests
+        userId = responseBody.data.id; // Store userId for next tests
 
-        console.log(`Created User ID: ${userId}`);
+        console.log(`Created User ID: ${JSON.stringify(responseBody)}`);
         expect(userId).toBeDefined();
+    });
+
+    test('Get the created user details', async ({ request }) => {
+        const response = await request.get(`${BASE_URL}/collections/users/records/${userId}?limit=25`, {
+            headers: headers
+        });
+        expect(response.status()).toBe(200);
+        const responseBody = await response.json();
+        expect(responseBody.data.data.name).toBe('Janani vikram');
     });
 
     test('Update user name and validate', async ({ request }) => {
 
-        const response = await request.patch(`${BASE_URL}/users/records/${userId}`, {
+        const response = await request.put(`${BASE_URL}/collections/users/records?project_id=1127`, {
             headers: headers,
             data: {
-                "name": "Janani Updated"
+                "data": {
+                    "name": "Janani updated"
+                }
             }
         });
-
         expect(response.status()).toBe(200);
         const responseBody = await response.json();
-        // Validate the name update
-        expect(responseBody.name).toBe('Janani Updated');
-        console.log('Update Successful:', responseBody.name);
-    });
-
-    test('Get the created user details', async ({ request }) => {
-        const response = await request.get(`${BASE_URL}/users/records/${userId}`, {
-            headers: headers
-        });
-        console.log(`Fetching from: ${BASE_URL}/users/records/${userId}`);
-        expect(response.status()).toBe(200);
-        const responseBody = await response.json();
-        expect(responseBody.name).toBe('Janani Updated');
+        expect(responseBody.data.name).toBe('Janani updated');
+        console.log('Update Successful:', responseBody.data.name);
     });
 });
