@@ -1,10 +1,10 @@
 const { test, expect } = require('@playwright/test');
 import dotenv from 'dotenv';
-import path from 'path';
 
 test.describe('Reqres Pro API Automation', () => {
 
-    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+    dotenv.config();
+
     const API_KEY = process.env.REQRES_API_KEY;
     const BASE_URL = 'https://reqres.in/api';
 
@@ -26,9 +26,7 @@ test.describe('Reqres Pro API Automation', () => {
             }
         });
 
-        // Validate status code 201 (Created)
         expect(response.status()).toBe(201);
-
         const responseBody = await response.json();
         userId = responseBody.data.id; // Store userId for next tests
 
